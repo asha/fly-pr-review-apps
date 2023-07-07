@@ -30,6 +30,7 @@ fi
 
 # PR was closed - remove the Fly app if one exists and exit.
 if [ "$EVENT_TYPE" = "closed" ]; then
+  flyctl postgres detach --app "$app" "$INPUT_POSTGRES" || true
   flyctl apps destroy "$app" -y || true
   exit 0
 fi
@@ -53,6 +54,9 @@ flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image
 if [ -n "$INPUT_POSTGRES" ]; then
   flyctl postgres attach --app "$app" "$INPUT_POSTGRES" || true
 fi
+
+# scale the app to 1 instance
+flyctl scale count 1 --app "$app" -y
 
 # Make some info available to the GitHub workflow.
 flyctl status --app "$app" --json >status.json
