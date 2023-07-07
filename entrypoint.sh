@@ -30,7 +30,6 @@ fi
 
 # PR was closed - remove the Fly app if one exists and exit.
 if [ "$EVENT_TYPE" = "closed" ]; then
-  flyctl postgres detach --app "$app" "$INPUT_POSTGRES" || true
   flyctl apps destroy "$app" -y || true
   exit 0
 fi
@@ -44,19 +43,16 @@ if ! flyctl status --app "$app"; then
   cp "$config.bak" "$config"
 fi
 if [ -n "$INPUT_SECRETS" ]; then
-  echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app --stage "$app"
+  echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app" --stage
 fi
 
 echo "Contents of config $config file: " && cat "$config"
 flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
 
-
 # Attach postgres cluster to the app if specified.
 if [ -n "$INPUT_POSTGRES" ]; then
   flyctl postgres attach --app "$app" "$INPUT_POSTGRES" || true
 fi
-
-# scale the app to 1 instance
 
 flyctl scale count 1 --app "$app" -y
 
