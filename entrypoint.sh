@@ -63,3 +63,5 @@ appid=$(jq -r .ID status.json)
 echo "hostname=$hostname" >> $GITHUB_OUTPUT
 echo "url=https://$hostname" >> $GITHUB_OUTPUT
 echo "id=$appid" >> $GITHUB_OUTPUT
+
+flyctl secrets set NODE_ENV=ci -a "$app"
