@@ -54,7 +54,6 @@ flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image
 # Attach postgres cluster to the app if specified.
 if [ -n "$INPUT_POSTGRES" ]; then
   flyctl postgres attach --app "$app" "$INPUT_POSTGRES" || true
-  flyctl secrets set NODE_ENV=ci --app "$app" || true
 fi
 
 # scale the app to 1 instance
@@ -68,3 +67,5 @@ appid=$(jq -r .ID status.json)
 echo "hostname=$hostname" >> $GITHUB_OUTPUT
 echo "url=https://$hostname" >> $GITHUB_OUTPUT
 echo "id=$appid" >> $GITHUB_OUTPUT
+
+flyctl secrets set NODE_ENV=ci --app "$app" || true
