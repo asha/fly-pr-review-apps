@@ -42,16 +42,19 @@ if ! flyctl status --app "$app"; then
   # Restore the original config file
   cp "$config.bak" "$config"
 fi
-if [ -n "$INPUT_SECRETS" ]; then
-  echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
-fi
+
 
 echo "Contents of config $config file: " && cat "$config"
 flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
 
+
 # Attach postgres cluster to the app if specified.
 if [ -n "$INPUT_POSTGRES" ]; then
   flyctl postgres attach --app "$app" "$INPUT_POSTGRES" || true
+fi
+
+if [ -n "$INPUT_SECRETS" ]; then
+  echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
 fi
 
 flyctl scale count 1 --app "$app" -y
@@ -63,5 +66,3 @@ appid=$(jq -r .ID status.json)
 echo "hostname=$hostname" >> $GITHUB_OUTPUT
 echo "url=https://$hostname" >> $GITHUB_OUTPUT
 echo "id=$appid" >> $GITHUB_OUTPUT
-
-flyctl secrets set NODE_ENV=ci -a "$app"
