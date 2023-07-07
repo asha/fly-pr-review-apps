@@ -40,7 +40,6 @@ if ! flyctl status --app "$app"; then
   # Backup the original config file since 'flyctl launch' messes up the [build.args] section
   cp "$config" "$config.bak"
   flyctl launch --no-deploy --copy-config --name "$app" --image "$image" --region "$region" --org "$org"
-  flyctl scale count 1 --app "$app" -y
   # Restore the original config file
   cp "$config.bak" "$config"
 fi
@@ -50,6 +49,9 @@ fi
 
 echo "Contents of config $config file: " && cat "$config"
 flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
+
+flyctl scale count 1 --app "$app" -y
+
 
 # Attach postgres cluster to the app if specified.
 if [ -n "$INPUT_POSTGRES" ]; then
