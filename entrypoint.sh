@@ -40,6 +40,7 @@ if ! flyctl status --app "$app"; then
   # Backup the original config file since 'flyctl launch' messes up the [build.args] section
   cp "$config" "$config.bak"
   flyctl launch --no-deploy --copy-config --name "$app" --image "$image" --region "$region" --org "$org"
+  flyctl scale count 1 --app "$app" -y
   # Restore the original config file
   cp "$config.bak" "$config"
 fi
@@ -56,7 +57,6 @@ if [ -n "$INPUT_POSTGRES" ]; then
 fi
 
 # scale the app to 1 instance
-flyctl scale count 1 --app "$app" -y
 
 # Make some info available to the GitHub workflow.
 flyctl status --app "$app" --json >status.json
