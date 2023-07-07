@@ -44,7 +44,7 @@ if ! flyctl status --app "$app"; then
   cp "$config.bak" "$config"
 fi
 if [ -n "$INPUT_SECRETS" ]; then
-  echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
+  echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app --stage "$app"
 fi
 
 echo "Contents of config $config file: " && cat "$config"
@@ -67,5 +67,3 @@ appid=$(jq -r .ID status.json)
 echo "hostname=$hostname" >> $GITHUB_OUTPUT
 echo "url=https://$hostname" >> $GITHUB_OUTPUT
 echo "id=$appid" >> $GITHUB_OUTPUT
-
-flyctl secrets set NODE_ENV=ci --app "$app" || true
