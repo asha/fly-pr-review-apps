@@ -50,8 +50,6 @@ fi
 echo "Contents of config $config file: " && cat "$config"
 flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
 
-flyctl scale count 1 --app "$app" -y
-
 
 # Attach postgres cluster to the app if specified.
 if [ -n "$INPUT_POSTGRES" ]; then
@@ -59,6 +57,9 @@ if [ -n "$INPUT_POSTGRES" ]; then
 fi
 
 # scale the app to 1 instance
+
+flyctl scale count 1 --app "$app" -y
+
 
 # Make some info available to the GitHub workflow.
 flyctl status --app "$app" --json >status.json
