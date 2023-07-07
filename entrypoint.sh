@@ -43,7 +43,7 @@ if ! flyctl status --app "$app"; then
   cp "$config.bak" "$config"
 fi
 if [ -n "$INPUT_SECRETS" ]; then
-  echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app" --stage
+  echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
 fi
 
 echo "Contents of config $config file: " && cat "$config"
