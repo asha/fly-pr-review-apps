@@ -43,6 +43,7 @@ if ! flyctl status --app "$app"; then
   cp "$config.bak" "$config"
 fi
 
+flyctl scale count 1 --app "$app" -y
 
 # Attach postgres cluster to the app if specified.
 if [ -n "$INPUT_POSTGRES" ]; then
@@ -53,7 +54,6 @@ if [ -n "$INPUT_SECRETS" ]; then
   echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
 fi
 
-flyctl scale count 1 --app "$app" -y
 
 echo "Contents of config $config file: " && cat "$config"
 flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
