@@ -41,15 +41,9 @@ if ! flyctl status --app "$app"; then
   flyctl launch --no-deploy --copy-config --name "$app" --image "$image" --region "$region" --org "$org"
   # Restore the original config file
   cp "$config.bak" "$config"
-
-  flyctl scale count 1 --app "$app" -y
 fi
 
 
-# Attach postgres cluster to the app if specified.
-if [ -n "$INPUT_POSTGRES" ]; then
-  flyctl postgres attach --app "$app" "$INPUT_POSTGRES" || true
-fi
 
 if [ -n "$INPUT_SECRETS" ]; then
   echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
@@ -59,6 +53,12 @@ fi
 echo "Contents of config $config file: " && cat "$config"
 flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
 
+# Attach postgres cluster to the app if specified.
+if [ -n "$INPUT_POSTGRES" ]; then
+  flyctl postgres attach --app "$app" "$INPUT_POSTGRES" || true
+fi
+
+flyctl scale --app "$app" count 1 || true
 
 # Make some info available to the GitHub workflow.
 flyctl status --app "$app" --json >status.json
