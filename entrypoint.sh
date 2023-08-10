@@ -49,6 +49,7 @@ if [ -n "$INPUT_SECRETS" ]; then
   echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
 fi
 
+flyctl scale --app "$app" count 1 || true
 
 echo "Contents of config $config file: " && cat "$config"
 flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
@@ -58,7 +59,7 @@ if [ -n "$INPUT_POSTGRES" ]; then
   flyctl postgres attach --app "$app" "$INPUT_POSTGRES" || true
 fi
 
-flyctl scale --app "$app" count 1 || true
+
 
 # Make some info available to the GitHub workflow.
 flyctl status --app "$app" --json >status.json
