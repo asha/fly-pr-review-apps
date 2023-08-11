@@ -42,19 +42,18 @@ if ! flyctl status --app "$app"; then
   # Restore the original config file
   cp "$config.bak" "$config"
 fi
-
-
-echo "Contents of config $config file: " && cat "$config"
-flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
-
 if [ -n "$INPUT_SECRETS" ]; then
   echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
 fi
 
 # Attach postgres cluster to the app if specified.
 if [ -n "$INPUT_POSTGRES" ]; then
-  flyctl postgres attach --app "$app" "$INPUT_POSTGRES" || true
+  flyctl postgres attach --postgres-app "$INPUT_POSTGRES" || true
 fi
+
+# Trigger the deploy of the new version.
+echo "Contents of config $config file: " && cat "$config"
+flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
 
 flyctl scale --app "$app" count 1 -y || true
 
