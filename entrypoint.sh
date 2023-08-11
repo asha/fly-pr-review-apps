@@ -44,14 +44,12 @@ if ! flyctl status --app "$app"; then
 fi
 
 
+echo "Contents of config $config file: " && cat "$config"
+flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
 
 if [ -n "$INPUT_SECRETS" ]; then
   echo $INPUT_SECRETS | tr " " "\n" | flyctl secrets import --app "$app"
 fi
-
-
-echo "Contents of config $config file: " && cat "$config"
-flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
 
 # Attach postgres cluster to the app if specified.
 if [ -n "$INPUT_POSTGRES" ]; then
