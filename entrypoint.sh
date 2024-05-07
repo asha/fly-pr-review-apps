@@ -38,7 +38,7 @@ fi
 if ! flyctl status --app "$app"; then
   # Backup the original config file since 'flyctl launch' messes up the [build.args] section
   cp "$config" "$config.bak"
-  flyctl launch --no-deploy --copy-config --name "$app" --image "$image" --region "$region" --org "$org"
+  flyctl launch --no-deploy --copy-config --name "$app" --image "$image" --regions "$region" --org "$org"
   # Restore the original config file
   cp "$config.bak" "$config"
 fi
@@ -54,7 +54,7 @@ if [ -n "$INPUT_POSTGRES" ]; then
 fi
 
 echo "Contents of config $config file: " && cat "$config"
-flyctl deploy --config "$config" --app "$app" --region "$region" --image "$image" --strategy immediate
+flyctl deploy --config "$config" --app "$app" --regions "$region" --image "$image" --strategy immediate
 
 
 
